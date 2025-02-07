@@ -12,14 +12,38 @@ from langchain_core.messages import trim_messages, get_buffer_string
 from langchain_groq import ChatGroq
 
 
-def connect_api() -> ChatGroq:
-    """Obtém a chave da API de variável de ambiente e inicializa o modelo Groq."""
+def _local_api_key():
+    """Obtém a chave da API através da .env."""
     load_dotenv()
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         raise ValueError(
-            "A chave da API não foi encontrada. Configure a variável de ambiente GROQ_API_KEY."
+            "\nA chave da API não foi encontrada. Configure a variável de ambiente GROQ_API_KEY."
         )
+    return api_key
+
+
+def _input_api_key():
+    """Obtém a chave da API via terminal inserido manualmente."""
+    print("\nPor favor passe sua chave de API da 'https://console.groq.com/keys'\n")
+    api_key = input(str())
+    return api_key
+
+
+def connect_api() -> ChatGroq:
+    """Obtém a chave da API de variável de ambiente ou via terminal e inicializa o modelo Groq."""
+    message = """Por favor, escolha o método para adicionar sua chave da API da Groq para conexão com o modelo Llama,
+sendo 1 para API local (utilizando .env) ou 2 para adicionar diretamente via terminal."""
+
+    while True:
+        print(message, end="")
+        user_format_key = input(str())
+        if user_format_key == "1":
+            api_key = _local_api_key()
+            break
+        elif user_format_key == "2":
+            api_key = _input_api_key()
+            break
 
     model = "llama-3.3-70b-versatile"
     groq_chat = ChatGroq(groq_api_key=api_key, model_name=model, temperature=0.5)
