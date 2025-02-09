@@ -8,6 +8,7 @@ from langchain_core.prompts import (
 from langchain_core.messages import SystemMessage
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import trim_messages, get_buffer_string
+from langchain_core.output_parsers import StrOutputParser
 
 from langchain_groq import ChatGroq
 
@@ -82,12 +83,14 @@ def conversation_with_chatbot(groq_chat, prompt, history, user_question):
         final_prompt = prompt.format_messages(
             chat_history=trimmed_history, human_input=user_question
         )
-
         response = groq_chat.invoke(final_prompt)
+        parser = StrOutputParser()
+
+        chain = final_prompt | groq_chat | parser
 
         history.add_user_message(user_question)
-        history.add_ai_message(response.content)
+        history.add_ai_message(chain)
 
-        return response.content or "Desculpe, não consegui gerar uma resposta."
+        return chain or "Desculpe, não consegui gerar uma resposta."
     except Exception as e:
         return f"Erro: {str(e)}"
