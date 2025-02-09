@@ -74,17 +74,21 @@ def _count_tokens(messages):
 def conversation_with_chatbot(model, prompt, history, user_question=None):
     """Inicia uma conversa com o chatbot e retorna a resposta."""
     try:
-
+        # Ajusta o histórico para não ultrapassar o limite de tokens
         trimmed_history = trim_messages(
             history.messages, max_tokens=1024, token_counter=_count_tokens
         )
         parser = StrOutputParser()
         chain = prompt | model | parser
+
         if user_question is not None:
             response = chain.invoke({"chat_history": trimmed_history, "human_input": user_question})
+
             history.add_user_message(user_question)
-            history.add_ai_message(chain)
-            return response or "Desculpe, não consegui gerar uma resposta."
-        return chain or "Desculpe, não consegui gerar uma resposta."
+            history.add_ai_message(response)
+            return response
+        else:
+            return chain
+
     except Exception as e:
         return f"Erro: {str(e)}"
