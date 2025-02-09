@@ -46,9 +46,8 @@ sendo 1 para API local (utilizando .env) ou 2 para adicionar diretamente via ter
             api_key = _input_api_key()
             break
 
-    model = "llama-3.3-70b-versatile"
-    groq_chat = ChatGroq(groq_api_key=api_key, model_name=model, temperature=0.5)
-    return groq_chat
+    model = ChatGroq(groq_api_key=api_key, model="llama-3.3-70b-versatile", temperature=0.5)
+    return model
 
 
 def chatbot_personality():
@@ -72,25 +71,20 @@ def _count_tokens(messages):
     return len(get_buffer_string(messages).split())
 
 
-def conversation_with_chatbot(groq_chat, prompt, history, user_question):
+def conversation_with_chatbot(model, prompt, history, user_question=None):
     """Inicia uma conversa com o chatbot e retorna a resposta."""
     try:
 
         trimmed_history = trim_messages(
             history.messages, max_tokens=1024, token_counter=_count_tokens
         )
-
-        final_prompt = prompt.format_messages(
-            chat_history=trimmed_history, human_input=user_question
-        )
-        response = groq_chat.invoke(final_prompt)
         parser = StrOutputParser()
-
-        chain = final_prompt | groq_chat | parser
-
-        history.add_user_message(user_question)
-        history.add_ai_message(chain)
-
+        chain = prompt | model | parser
+        if user_question is not None:
+            response = chain.invoke({"chat_history": trimmed_history, "human_input": user_question})
+            history.add_user_message(user_question)
+            history.add_ai_message(chain)
+            return response or "Desculpe, não consegui gerar uma resposta."
         return chain or "Desculpe, não consegui gerar uma resposta."
     except Exception as e:
         return f"Erro: {str(e)}"
