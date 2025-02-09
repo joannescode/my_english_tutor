@@ -10,6 +10,7 @@ As instruções abaixo permitirão que você obtenha uma cópia do projeto para 
 - Python3 
 - Terminal
 - Conexão com internet
+- Navegador de Internet
 
 ### 📥 Instalação da ferramenta
 Basta passar o comando abaixo em seu terminal dentro de uma pasta de sua escolha.
@@ -21,8 +22,12 @@ Siga o passo a passo abaixo para executar o english_tutor.py corretamente:
 - Inicie um ambiente virtual de sua escolha (conda, venv, etc)
 - Instale as depedências necessárias com o comando `pip install -r requirements.txt`
 - Insira sua chave API via terminal ou diretamente dentro de um arquivo .env
-- Executar o english_tutor.py via terminal ou dentro do ambiente de desenvolvimento
+- Executar o english_tutor.py via terminal ou dentro do ambiente de desenvolvimento para utilizar localmente
+- Executar o serve.py via terminal ou dentro do ambiente de desenvolvimento para utilizar no navegador
 - Iniciar uma conversa com seu tutor.
 
 ### 🧠 Template utilizado para o modelo
 ![Template](images/template.png)
+
+### 🌐 Uso via navegador
+![Navegador](images/navegador.jpeg)
